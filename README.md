@@ -1,4 +1,4 @@
-# bomWeather
+# bomWeather - Work in Progress
 
 bomWeather - Australian Forecast and Observation Rainmeter Skin for Australia
 
