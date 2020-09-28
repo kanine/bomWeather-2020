@@ -1,0 +1,6 @@
+debug.on
+*.log
+*.json
+*.lock
+*.txt
+*.html
