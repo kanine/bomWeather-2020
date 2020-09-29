@@ -1,9 +1,9 @@
 if fso.FileExists(scriptDir & "debug.on") Then
   debugActive = True
-  if fso.FileExists(scriptDir & "Logs\bomSetup " & formattedDateDay(Now()) & ".log") Then
-    Set debugFile = fso.OpenTextFile(scriptDir & "Logs\bomSetup " & formattedDateDay(Now()) & ".log", ForAppending, TristateFalse)
+  if fso.FileExists(scriptDir & "Logs\bomWeather " & formattedDateDay(Now()) & ".log") Then
+    Set debugFile = fso.OpenTextFile(scriptDir & "Logs\bomWeather " & formattedDateDay(Now()) & ".log", ForAppending, TristateFalse)
   Else
-    Set debugFile = fso.CreateTextFile (scriptDir & "Logs\bomSetup " & formattedDateDay(Now()) & ".log", False)
+    Set debugFile = fso.CreateTextFile (scriptDir & "Logs\bomWeather " & formattedDateDay(Now()) & ".log", False)
   End If
 Else
   debugActive = False
@@ -19,13 +19,17 @@ function fetchHTML(fetchURL)
 
   Set fetchObj = WScript.CreateObject("MSXML2.ServerXMLHTTP") 
 
+  LogThis "Fetching: " & fetchURL
+
   fetchObj.Open "GET", fetchURL, False
   fetchObj.Send
 
   If  Err.Number <> 0 Then
     RaiseException "fetchHTML failed: " & fetchURL, Err.Number, Err.Description
-  Else 
-    fetchHTML = fetchObj.responseText 
+  Else
+    response = fetchObj.responseText 
+    LogThis "Fetch Response: " & response
+    fetchHTML = response
   End If
    
 End Function
@@ -61,14 +65,13 @@ Sub RaiseException (pErrorSection, pErrorCode, pErrorMessage)
 
 End Sub
 
-Function formattedDateSS(dDate)
-  formattedDateSS = Year(dDate) & right("0" & Month(dDate),2) & right("0" & Day(dDate),2) & "-" & right("0" & Hour(dDate),2) & right("0" & Minute(dDate),2) & right("0" & second(dDate),2)
+Function formattedDateSS(pDate)
+  formattedDateSS = Year(pDate) & MyLpad(Month(pDate),"0",2) & MyLpad(Day(pDate),"0",2) & "-" & MyLpad(Hour(pDate),"0",2) & MyLpad(Minute(pDate),"0",2) & MyLpad(Second(pDate),"0",2)
 End Function
 
-Function formattedDateDay(dDate)
-  formattedDateDay = Year(dDate) & right("0" & Month(dDate),2) & right("0" & Day(dDate),2)
+Function formattedDateDay(pDate)
+  formattedDateDay = Year(pDate) & MyLpad(Month(pDate),"0",2) & MyLpad(Day(pDate),"0",2)
 End Function
-
 
 Private Function parse_item (ByRef contents, start_tag, end_tag)
 
@@ -214,4 +217,8 @@ Function cleanJSON(pValue)
 
   cleanJSON = trim(pValue)
 
+End Function
+
+Function MyLPad (MyValue, MyPadChar, MyPaddedLength) 
+  MyLpad = String(MyPaddedLength - Len(MyValue), MyPadChar) & MyValue 
 End Function
