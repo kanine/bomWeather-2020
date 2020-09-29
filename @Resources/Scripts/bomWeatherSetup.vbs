@@ -43,7 +43,9 @@ messageText = "Please enter your town and postcode" & vbCRLF & " eg (Melbourne 3
 
 Do While Not selectionConfirmed
 
-  bomTown = InputBox(messageText, "kanine bomWeather Setup", bomTown)
+  if firstTime Then bomTown = InputBox(messageText, "kanine bomWeather Setup", bomTown)
+
+  firstTime = False
 
   If bomTown = "" Then wScript.Quit
 
@@ -76,13 +78,28 @@ Do While Not selectionConfirmed
 
   bomSelect = InputBox(messageText, "kanine bomWeather Setup")
 
-  selectionConfirmed = true
+  if bomSelect = "" Then wScript.Quit
+
+  if isNumeric(bomSelect) Then
+    If cInt(bomSelect) <= uBound(geohashArray) + 1 Then
+      selectionConfirmed = true
+      bomTown = nameArray(bomSelect-1) & " " & stateArray(bomSelect-1) & " " & postcodeArray(bomSelect-1)
+    Else
+      messageText = "Search again" & vbCRLF & " eg (Melbourne 3000, Emerald 3782 etc)"
+      bomTown = bomSelect
+    End If
+  Else 
+    messageText = "Search again" & vbCRLF & " eg (Melbourne 3000, Emerald 3782 etc)"
+    bomTown = bomSelect
+  End If
 
 Loop
 
 Set f = fso.CreateTextFile(applicationDir & "\bomWeather-2020-Configuration.txt", True)
 f.writeline "bomTown = " & bomTown  & " <<<"
 f.close
+
+msgbox("Setting Confirmed: " & bomTown)
 
 Sub VBInclude(incfile)
 
@@ -96,94 +113,3 @@ Set incf = Nothing
 ExecuteGlobal includeScript
 
 End Sub
-
-Private Function parseJSONValue (pName, ByRef contents)
-
-  Dim position, item
-
-  position = InStr (1, contents, """" & pName & """:", vbTextCompare)
-  
-  If position > 0 Then
-    LogThis "Name found at: " & position
-    contents = mid (contents, position + len(pName)+3)
-    if InStr (1, contents, "}", vbTextCompare) < InStr (1, contents, ",", vbTextCompare) Then
-      position = InStr (1, contents, "}", vbTextCompare)
-    Else
-      position = InStr (1, contents, ",", vbTextCompare)
-    End If
-		If position > 0 Then
-      item = mid (contents, 1, position - 1)
-    Else
-      if InStr (1, contents, "}", vbTextCompare) > 0 AND InStr (1, contents, ",", vbTextCompare) = 0 Then 
-        position = InStr (1, contents, "}", vbTextCompare)
-        item = mid (contents, 1, position - 1)
-        LogThis "Last item in JSON"
-      Else 
-        Item = ""
-      End if
-    End If
-  Else
-    item = ""
-  End If
-
-  parseJSONValue = cleanJSON(Item)
-
-End Function
-
-Function jsonValuestoArray (pName, pJSON) 
-
-  arraySize = jsonCount(pName, pJSON)
-  contentJSON = pJSON
-
-  LogThis "Convert JSON Name " & pName & " to Array"
-
-  Dim jsonArray
-  redim jsonArray(arraySize-1)
-
-  For i = 0 to arraySize - 1
-    jsonArray(i) = parseJSONValue(pName, contentJSON)
-    LogThis i & ": " & jsonArray(i)
-  Next
-
-  jsonValuestoArray = jsonArray
-
-End Function
-
-Function URLEncode( StringVal )
-  Dim i, CharCode, Char, Space
-  Dim StringLen
-
-  StringLen = Len(StringVal)
-  ReDim result(StringLen)
-
-  Space = "+"
-  'Space = "%20"
-
-  For i = 1 To StringLen
-    Char = Mid(StringVal, i, 1)
-    CharCode = AscW(Char)
-    If 97 <= CharCode And CharCode <= 122 _
-    Or 64 <= CharCode And CharCode <= 90 _
-    Or 48 <= CharCode And CharCode <= 57 _
-    Or 45 = CharCode _
-    Or 46 = CharCode _
-    Or 95 = CharCode _
-    Or 126 = CharCode Then
-      result(i) = Char
-    ElseIf 32 = CharCode Then
-      result(i) = Space
-    Else
-      result(i) = "&#" & CharCode & ";"
-    End If
-  Next
-  URLEncode = Join(result, "")
-End Function
-
-Function cleanJSON(pValue)
-
-  if mid(pValue,1,1) = """" Then pValue = Mid(pValue,2)
-  if right(pValue,1) = """" Then pValue = Mid(pValue,1,Len(pValue) - 1)
-
-  cleanJSON = trim(pValue)
-
-End Function
