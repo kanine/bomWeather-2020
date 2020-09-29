@@ -97,6 +97,9 @@ Loop
 
 Set f = fso.CreateTextFile(applicationDir & "\bomWeather-2020-Configuration.txt", True)
 f.writeline "bomTown = " & bomTown  & " <<<"
+f.writeline "bomName = " & nameArray(bomSelect-1)  & " <<<"
+f.writeline "bomID = " & idArray(bomSelect-1)  & " <<<"
+f.writeline "bomgeohash = " & geohashArray(bomSelect-1)  & " <<<"
 f.close
 
 msgbox("Setting Confirmed: " & bomTown)
