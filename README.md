@@ -1,6 +1,6 @@
 # bomWeather - Work in Progress
 
-bomWeather - Australian Forecast and Observation Rainmeter Skin for Australia
+bomWeather - Australian Weather Rainmeter Skin based on the Bureau of Meteorology data
 
 Installation
 ============
@@ -8,7 +8,7 @@ Installation
 2) Download the latest release from GitHub, change file extension to rmskin
 3) Open the file in Explorer to automatically import into Rainmeter
 4) If using for the first time you will be prompted to run the setup script in the following location:
-       Documents\Rainmeter\Skins\bomWeather\@Resources\Scripts\bomWeatherSetup.vbs
+       Documents\Rainmeter\Skins\bomWeather-2020\@Resources\Scripts\bomWeatherSetup.vbs
 
 Using The Script
 ================
@@ -22,9 +22,9 @@ First thing is to make sure you can see the Melbourne weather - which is the def
 Forecast not showing?
 =====================
 There will be a short delay the first time you open the script, the impatient among you can run the following script to update forecast information immediately:
-        Documents\Rainmeter\Skins\bomWeather\@Resources\Scripts\Rainmeter\bomWeather.vbs
+        Documents\Rainmeter\Skins\bomWeather-2020\@Resources\Scripts\Rainmeter\bomWeather.vbs
 
-If it still isn't working contact me via the Whirlpool Forums https://forums.whirlpool.net.au/forum-replies.cfm?t=1942286.
+If it still isn't working please raise an issue in Github or contact me via the Whirlpool Forums https://forums.whirlpool.net.au/forum-replies.cfm?t=1942286.
 
 Notes
 =====
