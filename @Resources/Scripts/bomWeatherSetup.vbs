@@ -37,27 +37,48 @@ If fso.FileExists(applicationDir & "\bomWeather-2020-Configuration.txt") Then
   
 End If
 
-bomTown = InputBox("Please enter your town and postcode" & vbCRLF & _
-                     " eg (Melbourne 3000, Emerald 3782 etc)", "kanine bomWeather Setup", bomTown)
+selectionConfirmed = False
+firstTime = True
+messageText = "Please enter your town and postcode" & vbCRLF & " eg (Melbourne 3000, Emerald 3782 etc)"
 
-If bomTown = "" Then wScript.Quit
+Do While Not selectionConfirmed
 
-idLookup = fetchHTML("https://api.weather.bom.gov.au/v1/locations?search=melbourne")
+  bomTown = InputBox(messageText, "kanine bomWeather Setup", bomTown)
 
-If jsonCount("geohash",idLookup) Then
-  geohashArray = jsonValuestoArray("geohash",idLookup)
-  idArray = jsonValuestoArray("id",idLookup)
-  nameArray = jsonValuestoArray("name",idLookup)
-  postcodeArray = jsonValuestoArray("postcode",idLookup)
-  stateArray = jsonValuestoArray("state",idLookup)
-End If
+  If bomTown = "" Then wScript.Quit
 
-If debugActive Then
-  Set jsonFile = fso.CreateTextFile (scriptDir & "Data\locations-" & formattedDateDay(Now()) & ".json", True)
-  jsonFile.Write idLookup
-  jsonFile.Close
-  Set jsonFile = Nothing
-End If
+  idLookup = fetchHTML("https://api.weather.bom.gov.au/v1/locations?search=" & URLEncode(bomTown))
+
+  If debugActive Then
+    Set jsonFile = fso.CreateTextFile (scriptDir & "Data\locations-" & formattedDateDay(Now()) & ".json", True)
+    jsonFile.Write idLookup
+    jsonFile.Close
+    Set jsonFile = Nothing
+  End If
+
+  If jsonCount("geohash",idLookup) > 0 Then
+    geohashArray = jsonValuestoArray("geohash",idLookup)
+    idArray = jsonValuestoArray("id",idLookup)
+    nameArray = jsonValuestoArray("name",idLookup)
+    postcodeArray = jsonValuestoArray("postcode",idLookup)
+    stateArray = jsonValuestoArray("state",idLookup)
+
+    messageText = "Possible locations found" & vbCRLF & vbCRLF
+    For i = 0 to uBound(geohashArray)
+      messageText = messageText & i+1 & ": " & nameArray(i) & " " & stateArray(i) & " " & postcodeArray(i) & vbCRLF
+      if i > 15 Then 
+        messageText = messageText & "More entries... Refine search if necessary" & vbCRLF
+        Exit For
+      End If
+    Next
+    messageText = messageText & vbCRLF & "Please confirm selection or refine search"
+  End If
+
+  bomSelect = InputBox(messageText, "kanine bomWeather Setup")
+
+  selectionConfirmed = true
+
+Loop
 
 Set f = fso.CreateTextFile(applicationDir & "\bomWeather-2020-Configuration.txt", True)
 f.writeline "bomTown = " & bomTown  & " <<<"
@@ -105,7 +126,7 @@ Private Function parseJSONValue (pName, ByRef contents)
     item = ""
   End If
 
-  parseJSONValue = Trim(Item)
+  parseJSONValue = cleanJSON(Item)
 
 End Function
 
@@ -125,5 +146,44 @@ Function jsonValuestoArray (pName, pJSON)
   Next
 
   jsonValuestoArray = jsonArray
+
+End Function
+
+Function URLEncode( StringVal )
+  Dim i, CharCode, Char, Space
+  Dim StringLen
+
+  StringLen = Len(StringVal)
+  ReDim result(StringLen)
+
+  Space = "+"
+  'Space = "%20"
+
+  For i = 1 To StringLen
+    Char = Mid(StringVal, i, 1)
+    CharCode = AscW(Char)
+    If 97 <= CharCode And CharCode <= 122 _
+    Or 64 <= CharCode And CharCode <= 90 _
+    Or 48 <= CharCode And CharCode <= 57 _
+    Or 45 = CharCode _
+    Or 46 = CharCode _
+    Or 95 = CharCode _
+    Or 126 = CharCode Then
+      result(i) = Char
+    ElseIf 32 = CharCode Then
+      result(i) = Space
+    Else
+      result(i) = "&#" & CharCode & ";"
+    End If
+  Next
+  URLEncode = Join(result, "")
+End Function
+
+Function cleanJSON(pValue)
+
+  if mid(pValue,1,1) = """" Then pValue = Mid(pValue,2)
+  if right(pValue,1) = """" Then pValue = Mid(pValue,1,Len(pValue) - 1)
+
+  cleanJSON = trim(pValue)
 
 End Function
