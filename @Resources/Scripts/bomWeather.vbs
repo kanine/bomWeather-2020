@@ -113,6 +113,8 @@ For i = 0 to uBound(forecastArray)
 
 Next
 
+objStream.WriteText FormatCalc("LastUpdated", Now())
+
 if debugActive Then
   objStream.WriteText vbCRLF & "# Rainmeter Measure Definitions" & vbCRLF & vbCRLF
   objStream.WriteText "RegExp=""(?siU)" & regularExp & """" & vbCRLF & vbCRLF
@@ -170,6 +172,8 @@ Private Function ForecastTexttoNumber (ForecastText, DayNumber, isNight)
   FewShowers = False
   Hail = False
   Snow = False
+
+  ForecastText = lcase(ForecastText)
 
   If InStr(ForecastText,"thunderstorm") > 0 Then Thunder = True
   If InStr(ForecastText,"thunder") > 0 Then Thunder = True
