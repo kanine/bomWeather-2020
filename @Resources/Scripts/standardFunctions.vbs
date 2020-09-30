@@ -144,7 +144,7 @@ Function jsonValuestoArray (pName, pJSON)
 
   For i = 0 to arraySize - 1
     jsonArray(i) = parseJSONValue(pName, contentJSON)
-    LogThis i & ": " & jsonArray(i)
+    ' LogThis i & ": " & jsonArray(i)
   Next
 
   jsonValuestoArray = jsonArray
@@ -192,7 +192,7 @@ Private Function parseJSONValue (pName, ByRef contents)
   position = InStr (1, contents, """" & pName & """:", vbTextCompare)
   
   If position > 0 Then
-    LogThis "Name found at: " & position
+    ' LogThis "Name found at: " & position
     contents = trim(mid (contents, position + len(pName)+3))
     returnValue = ""
     quoted = false
