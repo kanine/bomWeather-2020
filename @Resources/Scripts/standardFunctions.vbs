@@ -28,7 +28,7 @@ function fetchHTML(fetchURL)
     RaiseException "fetchHTML failed: " & fetchURL, Err.Number, Err.Description
   Else
     response = fetchObj.responseText 
-    LogThis "Fetch Response: " & response
+    ' LogThis "Fetch Response: " & response
     fetchHTML = response
   End If
    
@@ -73,6 +73,10 @@ Function formattedDateDay(pDate)
   formattedDateDay = Year(pDate) & MyLpad(Month(pDate),"0",2) & MyLpad(Day(pDate),"0",2)
 End Function
 
+Function formatted24hr(pDate)
+  formatted24hr = MyLpad(Hour(pDate),"0",2) & ":" & MyLpad(Minute(pDate),"0",2)
+End Function
+
 Private Function parse_item (ByRef contents, start_tag, end_tag)
 
   Dim position, item
@@ -113,8 +117,8 @@ Function jsonCount (pName, pJSON)
   occurs = 0
   searchName = """" & pName & """:"
 
-  LogThis "Counting: " & searchName
-  LogThis "In: " & pJSON
+  ' LogThis "Counting: " & searchName
+  ' LogThis "In: " & pJSON
 
   Do While InStr(startPos,pJSON,searchName,1) > 0
     ' LogThis "Start Postion: " & startPos & " Found at: " & InStr(startPos,pJSON,searchName,1)
@@ -122,42 +126,9 @@ Function jsonCount (pName, pJSON)
     occurs = occurs + 1
   Loop
 
-  LogThis "Found: " & occurs & " occurences"
+  LogThis "Found: " & occurs & " occurences of " & pName
 
   jsonCount = occurs
-
-End Function
-
-Private Function parseJSONValue (pName, ByRef contents)
-
-  Dim position, item
-
-  position = InStr (1, contents, """" & pName & """:", vbTextCompare)
-  
-  If position > 0 Then
-    LogThis "Name found at: " & position
-    contents = mid (contents, position + len(pName)+3)
-    if InStr (1, contents, "}", vbTextCompare) < InStr (1, contents, ",", vbTextCompare) Then
-      position = InStr (1, contents, "}", vbTextCompare)
-    Else
-      position = InStr (1, contents, ",", vbTextCompare)
-    End If
-		If position > 0 Then
-      item = mid (contents, 1, position - 1)
-    Else
-      if InStr (1, contents, "}", vbTextCompare) > 0 AND InStr (1, contents, ",", vbTextCompare) = 0 Then 
-        position = InStr (1, contents, "}", vbTextCompare)
-        item = mid (contents, 1, position - 1)
-        LogThis "Last item in JSON"
-      Else 
-        Item = ""
-      End if
-    End If
-  Else
-    item = ""
-  End If
-
-  parseJSONValue = cleanJSON(Item)
 
 End Function
 
@@ -210,15 +181,74 @@ Function URLEncode( StringVal )
   URLEncode = Join(result, "")
 End Function
 
-Function cleanJSON(pValue)
+Function MyLPad (MyValue, MyPadChar, MyPaddedLength) 
+  MyLpad = String(MyPaddedLength - Len(MyValue), MyPadChar) & MyValue 
+End Function
 
-  if mid(pValue,1,1) = """" Then pValue = Mid(pValue,2)
-  if right(pValue,1) = """" Then pValue = Mid(pValue,1,Len(pValue) - 1)
+Private Function parseJSONValue (pName, ByRef contents)
 
-  cleanJSON = trim(pValue)
+  Dim position, item
+
+  position = InStr (1, contents, """" & pName & """:", vbTextCompare)
+  
+  If position > 0 Then
+    LogThis "Name found at: " & position
+    contents = trim(mid (contents, position + len(pName)+3))
+    returnValue = ""
+    quoted = false
+    nameEnd = false
+    scanPosition = 1
+    Do While scanPosition <= len(contents) AND Not nameEnd
+      ' LogThis "Scan Position: " & scanPosition & " " & Left(Mid(contents,scanPosition),10)
+      if scanPosition = 1 and Left(contents,1) = """" Then 
+        ' LogThis "Quoted value detected"
+        quoted = True
+        scanPosition = scanPosition + 1
+      End If
+      if Mid(contents,scanPosition,1) = "\" Then 
+        ' LogThis "Escape value detected"
+        returnValue = returnValue & Mid(contents,scanPosition+1,1)
+        scanPosition = scanPosition + 1
+      End If
+      ' LogThis "Test Char: " & Mid(contents,scanPosition,1)
+      if quoted and Mid(contents,scanPosition,1) = """" Then nameEnd = true
+      if not quoted and Mid(contents,scanPosition,1) = "," Then nameEnd = true
+      if not quoted and Mid(contents,scanPosition,1) = "}" Then nameEnd = true
+      if not nameEnd Then
+        returnValue = returnValue & Mid(contents,scanPosition,1)
+        scanPosition = scanPosition + 1
+      End If
+      ' LogThis "Value: " & returnValue
+      ' WScript.Quit
+    Loop
+  Else
+    item = "Invalid Data"
+  End If
+
+  parseJSONValue = trim(returnValue)
 
 End Function
 
-Function MyLPad (MyValue, MyPadChar, MyPaddedLength) 
-  MyLpad = String(MyPaddedLength - Len(MyValue), MyPadChar) & MyValue 
+Function ConvertUTCToLocal( varTime )
+    
+  Dim myObj, MyDate
+  
+  if Not isnull(varTime) Then
+  
+    MyDate = CDate(replace(Mid(varTime, 1, 19) , "T", " "))
+    Set myObj = CreateObject( "WbemScripting.SWbemDateTime" )
+    myObj.Year = Year( MyDate )
+    myObj.Month = Month( MyDate )
+    myObj.Day = Day( MyDate )
+    myObj.Hours = Hour( MyDate )
+    myObj.Minutes = Minute( myDate )
+    myObj.Seconds = Second( myDate )
+    ConvertUTCToLocal = myObj.GetVarDate( True )
+    
+  Else
+  
+    ConvertUTCToLocal = null
+  
+  End If
+  
 End Function

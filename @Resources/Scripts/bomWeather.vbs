@@ -1,5 +1,7 @@
-Public scriptDir, debugActive, fso, debugFile
+Public scriptDir, debugActive, fso, debugFile, regularExp, measureDefs, measureIndex
 Const ForReading = 1, ForWriting = 2, ForAppending = 8, applicationFolder = "Rainmeter-kanine"
+degreeSymbol = Chr(176)
+measureIndex = 1
 
 scriptDir = CreateObject("Scripting.FileSystemObject").GetParentFolderName(WScript.ScriptFullName) & "\"
 Set fso = CreateObject("Scripting.FileSystemObject")
@@ -65,6 +67,68 @@ If debugActive Then
   Set jsonFile = Nothing
 End If
 
+forecastArray = jsonValuestoArray("extended_text",bomDaily)
+highsArray = jsonValuestoArray("temp_max",bomDaily)
+lowsArray = jsonValuestoArray("temp_min",bomDaily)
+chanceArray = jsonValuestoArray("chance",bomDaily)
+dateArray = jsonValuestoArray("date",bomDaily)
+currentTempArray = jsonValuestoArray("temp",bomObservations)
+apparentTempArray = jsonValuestoArray("temp_feels_like",bomObservations)
+stationArray = jsonValuestoArray("name",bomObservations)
+issueArray = jsonValuestoArray("issue_time",bomObservations)
+
+' Create Formatted Variables for use by the Skin
+
+'Set f = fso.CreateTextFile (scriptDir &"Data\bomWeather-new.txt", True)
+
+Dim objStream
+Set objStream = CreateObject("ADODB.Stream")
+objStream.CharSet = "utf-8"
+objStream.Open
+
+
+objStream.WriteText FormatCalc("StationAt", stationArray(0) & " at " & formatted24hr(ConvertUTCToLocal(issueArray(i))))
+objStream.WriteText FormatCalc("CurrentTemp", currentTempArray(0) & degreeSymbol)
+objStream.WriteText FormatCalc("AppTemp", apparentTempArray(0) & degreeSymbol)
+
+For i = 0 to uBound(forecastArray)
+
+  objStream.WriteText FormatCalc("Day" & i & "Forecast", forecastArray(i))
+  objStream.WriteText FormatCalc("Day" & i & "HighLow", highsArray(i) & degreeSymbol & "/" & lowsArray(i))
+  objStream.WriteText FormatCalc("Day" & i & "ChanceofRain", chanceArray(i))
+  objStream.WriteText FormatCalc("Day" & i & "Date", ConvertUTCToLocal(dateArray(i)))
+  objStream.WriteText FormatCalc("Day" & i & "DayName", WeekdayName(Weekday(ConvertUTCToLocal(dateArray(i)))))
+  objStream.WriteText FormatCalc("Day" & i & "ShortCapName", uCase(Left(WeekdayName(Weekday(ConvertUTCToLocal(dateArray(i)))),3)))
+
+Next
+
+if debugActive Then
+  objStream.WriteText vbCRLF & "# Rainmeter Measure Definitions" & vbCRLF & vbCRLF
+  objStream.WriteText "RegExp=""(?siU)" & regularExp & """" & vbCRLF & vbCRLF
+  objStream.WriteText measureDefs
+End If
+
+objStream.SaveToFile scriptDir & "Data\bomWeather-new.txt", 2
+
+'f.Close
+
+Set f = Nothing
+
+Private Function FormatCalc (paramString, wMeasure)
+
+  regularExp = regularExp & "<" & paramString & ">(.*)" & "</" & paramString & ">.*"
+  
+  measureDefs = measureDefs & "[Measure" & paramString & "]" & vbCRLF
+  measureDefs = measureDefs & "Measure=WebParser" & vbCRLF
+  measureDefs = measureDefs & "URL=[MeasurebomWeather]" & vbCRLF
+  measureDefs = measureDefs & "StringIndex=" & measureIndex & vbCRLF
+  measureDefs = measureDefs & vbCRLF
+  measureIndex = measureIndex + 1
+
+  FormatCalc = "<" & paramString & ">" & wMeasure & "</" & paramString & ">" & vbCRLF
+
+End Function
+
 Sub VBInclude(incfile)
 
 ' Allows another VBScript file to be incorporated into this one
@@ -77,3 +141,4 @@ Set incf = Nothing
 ExecuteGlobal includeScript
 
 End Sub
+
