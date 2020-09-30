@@ -101,7 +101,8 @@ objStream.WriteText FormatCalc("CurrentRelHumidity", humidityArray(0))
 objStream.WriteText FormatCalc("CurrentRainfall", rainfallArray(0))
 objStream.WriteText FormatCalc("CurrentWindDirSpeed", windDirArray(0) & " " & windSpeedArray(0) & "km/h")
 
-For i = 0 to uBound(forecastArray)
+For i = 0 to 6
+'For i = 0 to uBound(forecastArray)
 
   objStream.WriteText FormatCalc("Day" & i & "Forecast", forecastArray(i))
   objStream.WriteText FormatCalc("Day" & i & "ForecastImage", ForecastTexttoNumber(forecastArray(i),i,isNightArray(0)))
