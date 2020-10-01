@@ -83,6 +83,7 @@ rainfallArray = jsonValuestoArray("rain_since_9am",bomObservations)
 windDirArray = jsonValuestoArray("direction",bomObservations)
 windSpeedArray = jsonValuestoArray("speed_kilometre",bomObservations)
 windKnotsArray = jsonValuestoArray("speed_knot",bomObservations)
+feelsLikeArray = jsonValuestoArray("temp_feels_like",bomObservations)
 
 ' Create Formatted Variables for use by the Skin
 
@@ -101,6 +102,7 @@ objStream.WriteText FormatCalc("CurrentRelHumidity", humidityArray(0))
 objStream.WriteText FormatCalc("CurrentRainfall", rainfallArray(0))
 objStream.WriteText FormatCalc("CurrentWindDirSpeed", windDirArray(0) & " " & windSpeedArray(0) & "km/h")
 objStream.WriteText FormatCalc("CurrentForecastShortText", "Forecast for " & WeekdayName(Weekday(ConvertUTCToLocal(dateArray(0)))) & " Max: " & highsArray(i) & degreeSymbol ) 
+objStream.WriteText FormatCalc("FeelsLike", feelsLikeArray(0) & degreeSymbol ) 
 
 For i = 0 to 6
 'For i = 0 to uBound(forecastArray)
