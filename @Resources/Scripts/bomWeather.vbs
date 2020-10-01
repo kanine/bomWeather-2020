@@ -97,6 +97,7 @@ hourly3TimeArray = jsonValuestoArray("time",bom3Hourly)
 hourly3ChanceArray = jsonValuestoArray("chance",bom3Hourly)
 hourly3IconArray = jsonValuestoArray("icon_descriptor",bom3Hourly)
 hourly3IsNightArray = jsonValuestoArray("is_night",bom3Hourly)
+hourly3TempArray = jsonValuestoArray("temp",bom3Hourly)
 
 
 ' Create Formatted Variables for use by the Skin
@@ -151,7 +152,7 @@ objStream.Open
 'For i = 0 to uBound(hourlyTimeArray)
 For i = 0 to 12
 
-  objStream.WriteText FormatCalc("Hour" & i & "TimeUTC", hourlyTimeArray(i))
+  'objStream.WriteText FormatCalc("Hour" & i & "TimeUTC", hourlyTimeArray(i))
   'objStream.WriteText FormatCalc("Hour" & i & "Time", ConvertUTCToLocal(hourlyTimeArray(i)))
   objStream.WriteText FormatCalc("Hour" & i & "Time24", formatted24hr(ConvertUTCToLocal(hourlyTimeArray(i))))
   objStream.WriteText FormatCalc("Hour" & i & "Chance", hourlyChanceArray(i))
@@ -178,11 +179,12 @@ objStream.Open
 'For i = 0 to uBound(hourly3TimeArray)
 For i = 0 to 12
 
-  objStream.WriteText FormatCalc("3Hour" & i & "TimeUTC", hourly3TimeArray(i))
-  objStream.WriteText FormatCalc("3Hour" & i & "Time", ConvertUTCToLocal(hourly3TimeArray(i)))
+  'objStream.WriteText FormatCalc("3Hour" & i & "TimeUTC", hourly3TimeArray(i))
+  'objStream.WriteText FormatCalc("3Hour" & i & "Time", ConvertUTCToLocal(hourly3TimeArray(i)))
   objStream.WriteText FormatCalc("3Hour" & i & "Time24", formatted24hr(ConvertUTCToLocal(hourly3TimeArray(i))))
   objStream.WriteText FormatCalc("3Hour" & i & "Chance", hourly3ChanceArray(i))
-  objStream.WriteText FormatCalc("3Hour" & i & "Icon", hourly3IconArray(i))
+  objStream.WriteText FormatCalc("3Hour" & i & "Temp", hourly3TempArray(i) & degreeSymbol)
+  'objStream.WriteText FormatCalc("3Hour" & i & "Icon", hourly3IconArray(i))
   objStream.WriteText FormatCalc("3Hour" & i & "IconImage", ForecastTexttoNumber(hourly3IconArray(i),0,hourly3IsNightArray(i)))
 
 Next
