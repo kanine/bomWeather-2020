@@ -100,6 +100,7 @@ objStream.WriteText FormatCalc("ObservedMaxTempTime", "NA")
 objStream.WriteText FormatCalc("CurrentRelHumidity", humidityArray(0))
 objStream.WriteText FormatCalc("CurrentRainfall", rainfallArray(0))
 objStream.WriteText FormatCalc("CurrentWindDirSpeed", windDirArray(0) & " " & windSpeedArray(0) & "km/h")
+objStream.WriteText FormatCalc("CurrentForecastShortText", "Forecast for " & WeekdayName(Weekday(ConvertUTCToLocal(dateArray(0)))) & " Max: " & highsArray(i) & degreeSymbol ) 
 
 For i = 0 to 6
 'For i = 0 to uBound(forecastArray)
@@ -124,9 +125,7 @@ End If
 
 objStream.SaveToFile scriptDir & "Data\bomWeather-2020-measures.txt", 2
 
-'f.Close
-
-Set f = Nothing
+Set objStream = Nothing
 
 Private Function FormatCalc (paramString, wMeasure)
 
