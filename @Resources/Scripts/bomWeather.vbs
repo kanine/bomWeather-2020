@@ -87,6 +87,17 @@ windSpeedArray = jsonValuestoArray("speed_kilometre",bomObservations)
 windKnotsArray = jsonValuestoArray("speed_knot",bomObservations)
 feelsLikeArray = jsonValuestoArray("temp_feels_like",bomObservations)
 
+hourlyTimeArray = jsonValuestoArray("time",bomHourly)
+hourlyChanceArray = jsonValuestoArray("chance",bomHourly)
+hourlyIconArray = jsonValuestoArray("icon_descriptor",bomHourly)
+hourlyIsNightArray = jsonValuestoArray("is_night",bomHourly)
+
+hourly3TimeArray = jsonValuestoArray("time",bom3Hourly)
+hourly3ChanceArray = jsonValuestoArray("chance",bom3Hourly)
+hourly3IconArray = jsonValuestoArray("icon_descriptor",bom3Hourly)
+hourly3IsNightArray = jsonValuestoArray("is_night",bom3Hourly)
+
+
 ' Create Formatted Variables for use by the Skin
 
 'Set f = fso.CreateTextFile (scriptDir &"Data\bomWeather-new.txt", True)
@@ -118,6 +129,30 @@ For i = 0 to 6
   objStream.WriteText FormatCalc("Day" & i & "Date", ConvertUTCToLocal(dateArray(i)))
   objStream.WriteText FormatCalc("Day" & i & "DayName", WeekdayName(Weekday(ConvertUTCToLocal(dateArray(i)))))
   objStream.WriteText FormatCalc("Day" & i & "ShortCapName", uCase(Left(WeekdayName(Weekday(ConvertUTCToLocal(dateArray(i)))),3)))
+
+Next
+
+'For i = 0 to uBound(hourlyTimeArray)
+For i = 0 to 12
+
+  objStream.WriteText FormatCalc("Hour" & i & "TimeUTC", hourlyTimeArray(i))
+  objStream.WriteText FormatCalc("Hour" & i & "Time", ConvertUTCToLocal(hourlyTimeArray(i)))
+  objStream.WriteText FormatCalc("Hour" & i & "Time24", formatted24hr(ConvertUTCToLocal(hourlyTimeArray(i))))
+  objStream.WriteText FormatCalc("Hour" & i & "Chance", hourlyChanceArray(i))
+  objStream.WriteText FormatCalc("Hour" & i & "Icon", hourlyIconArray(i))
+  objStream.WriteText FormatCalc("Hour" & i & "IconImage", ForecastTexttoNumber(hourlyIconArray(i),0,hourlyIsNightArray(i)))
+
+Next
+
+'For i = 0 to uBound(hourly3TimeArray)
+For i = 0 to 12
+
+  objStream.WriteText FormatCalc("3Hour" & i & "TimeUTC", hourly3TimeArray(i))
+  objStream.WriteText FormatCalc("3Hour" & i & "Time", ConvertUTCToLocal(hourly3TimeArray(i)))
+  objStream.WriteText FormatCalc("3Hour" & i & "Time24", formatted24hr(ConvertUTCToLocal(hourly3TimeArray(i))))
+  objStream.WriteText FormatCalc("3Hour" & i & "Chance", hourly3ChanceArray(i))
+  objStream.WriteText FormatCalc("3Hour" & i & "Icon", hourly3IconArray(i))
+  objStream.WriteText FormatCalc("3Hour" & i & "IconImage", ForecastTexttoNumber(hourly3IconArray(i),0,hourly3IsNightArray(i)))
 
 Next
 
