@@ -155,7 +155,7 @@ For i = 0 to 12
   'objStream.WriteText FormatCalc("Hour" & i & "Time", ConvertUTCToLocal(hourlyTimeArray(i)))
   objStream.WriteText FormatCalc("Hour" & i & "Time24", formatted24hr(ConvertUTCToLocal(hourlyTimeArray(i))))
   objStream.WriteText FormatCalc("Hour" & i & "Chance", hourlyChanceArray(i))
-  objStream.WriteText FormatCalc("Hour" & i & "Temp", hourlyTempArray(i))
+  objStream.WriteText FormatCalc("Hour" & i & "Temp", hourlyTempArray(i) & degreeSymbol)
   'objStream.WriteText FormatCalc("Hour" & i & "Icon", hourlyIconArray(i))
   objStream.WriteText FormatCalc("Hour" & i & "IconImage", ForecastTexttoNumber(hourlyIconArray(i),0,hourlyIsNightArray(i)))
 
