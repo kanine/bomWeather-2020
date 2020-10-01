@@ -1,4 +1,4 @@
-Public scriptDir, debugActive, fso, debugFile, regularExp, measureDefs, measureIndex
+Public scriptDir, debugActive, fso, debugFile, regularExp, measureDefs, measureIndex, measureFile
 Const ForReading = 1, ForWriting = 2, ForAppending = 8, applicationFolder = "Rainmeter-kanine"
 degreeSymbol = Chr(176)
 measureIndex = 1
@@ -91,6 +91,7 @@ hourlyTimeArray = jsonValuestoArray("time",bomHourly)
 hourlyChanceArray = jsonValuestoArray("chance",bomHourly)
 hourlyIconArray = jsonValuestoArray("icon_descriptor",bomHourly)
 hourlyIsNightArray = jsonValuestoArray("is_night",bomHourly)
+hourlytempArray = jsonValuestoArray("temp",bomHourly)
 
 hourly3TimeArray = jsonValuestoArray("time",bom3Hourly)
 hourly3ChanceArray = jsonValuestoArray("chance",bom3Hourly)
@@ -118,7 +119,6 @@ objStream.WriteText FormatCalc("CurrentForecastShortText", "Forecast for " & Wee
 objStream.WriteText FormatCalc("FeelsLike", feelsLikeArray(0) & degreeSymbol )
 objStream.WriteText FormatCalc("LaterTemp", laterLabelArray(0) & ": " & tempLaterArray(0) & degreeSymbol )
 
-
 For i = 0 to 6
 'For i = 0 to uBound(forecastArray)
 
@@ -132,17 +132,48 @@ For i = 0 to 6
 
 Next
 
+objStream.WriteText FormatCalc("LastUpdated", Now())
+
+if debugActive Then
+  objStream.WriteText vbCRLF & "# Rainmeter Measure Definitions" & vbCRLF & vbCRLF
+  objStream.WriteText "RegExp=""(?siU)" & regularExp & """" & vbCRLF & vbCRLF
+  objStream.WriteText measureDefs
+End If
+
+objStream.SaveToFile scriptDir & "Data\bomWeather-2020-measures.txt", 2
+objStream.Close
+
+measureDefs = ""
+regularExp = ""
+measureIndex = 1
+
+objStream.Open
 'For i = 0 to uBound(hourlyTimeArray)
 For i = 0 to 12
 
   objStream.WriteText FormatCalc("Hour" & i & "TimeUTC", hourlyTimeArray(i))
-  objStream.WriteText FormatCalc("Hour" & i & "Time", ConvertUTCToLocal(hourlyTimeArray(i)))
+  'objStream.WriteText FormatCalc("Hour" & i & "Time", ConvertUTCToLocal(hourlyTimeArray(i)))
   objStream.WriteText FormatCalc("Hour" & i & "Time24", formatted24hr(ConvertUTCToLocal(hourlyTimeArray(i))))
   objStream.WriteText FormatCalc("Hour" & i & "Chance", hourlyChanceArray(i))
-  objStream.WriteText FormatCalc("Hour" & i & "Icon", hourlyIconArray(i))
+  objStream.WriteText FormatCalc("Hour" & i & "Temp", hourlyTempArray(i))
+  'objStream.WriteText FormatCalc("Hour" & i & "Icon", hourlyIconArray(i))
   objStream.WriteText FormatCalc("Hour" & i & "IconImage", ForecastTexttoNumber(hourlyIconArray(i),0,hourlyIsNightArray(i)))
 
 Next
+
+if debugActive Then
+  objStream.WriteText vbCRLF & "# Rainmeter Measure Definitions" & vbCRLF & vbCRLF
+  objStream.WriteText "RegExp=""(?siU)" & regularExp & """" & vbCRLF & vbCRLF
+  objStream.WriteText measureDefs
+End If
+
+objStream.SaveToFile scriptDir & "Data\bomWeather-2020-hourly.txt", 2
+objStream.Close
+
+measureDefs = ""
+regularExp = ""
+measureIndex = 1
+objStream.Open
 
 'For i = 0 to uBound(hourly3TimeArray)
 For i = 0 to 12
@@ -164,7 +195,8 @@ if debugActive Then
   objStream.WriteText measureDefs
 End If
 
-objStream.SaveToFile scriptDir & "Data\bomWeather-2020-measures.txt", 2
+objStream.SaveToFile scriptDir & "Data\bomWeather-2020-3hourly.txt", 2
+objStream.Close
 
 Set objStream = Nothing
 
