@@ -1,6 +1,6 @@
 # bomWeather - Work in Progress
 
-bomWeather - Australian Weather Rainmeter Skin based on the Bureau of Meteorology data
+An Australian Weather Rainmeter Skin based on the Bureau of Meteorology data
 
 Installation
 ============

@@ -1,5 +1,5 @@
-Public scriptDir, debugActive, fso, debugFile, regularExp, measureDefs, measureIndex, measureFile
-Const ForReading = 1, ForWriting = 2, ForAppending = 8, applicationFolder = "Rainmeter-kanine"
+Public scriptDir, debugActive, fso, debugFile, regularExp, measureDefs, measureIndex, measureFile, moonPhase
+Const ForReading = 1, ForWriting = 2, ForAppending = 8, applicationFolder = "Rainmeter-kanine", skin = "KonfabulatorPLUS"
 degreeSymbol = Chr(176)
 measureIndex = 1
 
@@ -38,6 +38,9 @@ bom3Hourly = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomParen
 bomObservations = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomgeohash & "/observations")
 bomRain = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomParent & "/forecast/rain")
 bomWarnings = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomgeohash & "/warnings")
+moonPhase = MoonPhaseInfo
+
+LogThis "Moon Phase:" & moonPhase
 
 If debugActive Then
   Set jsonFile = fso.CreateTextFile (scriptDir & "Data\location-" & formattedDateDay(Now()) & ".json", True)
@@ -233,7 +236,6 @@ End Sub
 Private Function ForecastTexttoNumber (ForecastText, DayNumber, isNight)
 
   Dim Thunder, Rain, Showers, Fine, PartlyCloudy, MostlyCloudy, Fog, FewShowers, Hail, Snow, TempResult
-  Dim fs, MoonPhase
 
   Thunder = False
   Rain = False
@@ -329,14 +331,14 @@ Private Function ForecastTexttoNumber (ForecastText, DayNumber, isNight)
     If TempResult = 15 Then TempResult = 46
     If TempResult = 26 Then TempResult = 27
     If TempResult = 34 Then TempResult = 33
+
+    'LogThis moonPhase
+
+    LogThis "Check for: " & scriptDir & "..\images\" & skin & "\" & TempResult & moonPhase & ".png"
     
-    'MoonPhase = Get_Cache_Value("Moon Phase", forecast_file)
-  
-    'Set fs = CreateObject ("Scripting.FileSystemObject")
-   
-    'If fs.FileExists ("..\images\" & skin & "\" & TempResult & MoonPhase & ".png") Then 
-    '  TempResult = TempResult & MoonPhase
-    'End If
+    If fso.FileExists (scriptDir & "..\images\" & skin & "\" & TempResult & moonPhase & ".png") Then 
+      TempResult = TempResult & moonPhase
+    End If
 
   End If
 
@@ -347,3 +349,77 @@ Private Function ForecastTexttoNumber (ForecastText, DayNumber, isNight)
 End Function
 
 
+Private Function MoonPhaseInfo()
+  
+  Dim MoonPhaseInt, wLastFullMoonDate, wFullMoonDate, f, fs, wTemp, wDaysDiff, wEOF, wDayOfCycle
+	
+  ' Updated 24/12/2014 to use Full Moon Data, and improve readability
+  ' The last known source of this file is https://www.timeanddate.com/moon/phases/australia/melbourne
+  
+  Set f = fso.OpenTextFile (scriptDir & "Data\FullMoons.csv", ForReading)
+
+  wEOF = False
+  
+  wTemp = f.ReadLine 'Junk the header
+
+  Do While f.AtEndOfStream = False and wEOF = False
+
+    wFullMoonDate = f.ReadLine
+    wDaysDiff = DateDiff("d",wFullMoonDate,Now())
+    if wDaysDiff = 0 Then wLastFullMoonDate = wFullMoonDate
+    LogThis wFullMoonDate & " Days Diff: " & wDaysDiff
+    If wDaysDiff =< 0 Then 
+      wEOF = True
+    Else
+      wLastFullMoonDate = wFullMoonDate
+    End If  
+  Loop
+
+  f.close
+
+  wDaysDiff = DateDiff("d",wLastFullMoonDate,Now())
+
+  'Weather Icon Formats NewMoon - 1 First Quarter - 3 Full - 5 LastQuarter - 7
+  'We need to convert the number of days since last known full moon to one of these
+  'Approx Lunar Cycle is 28 days so start by getting a number from 0-27
+  
+  wDayOfCycle = wDaysDiff Mod 27
+  
+  ' There are tidier ways to do this, but to save my sanity heres a simple conversion from Day of the Cycle to an Image suffix
+  
+  Select Case wDayOfCycle
+   Case  0 MoonPhaseInt = 5
+   Case  1 MoonPhaseInt = 5
+   Case  2 MoonPhaseInt = 5
+   Case  3 MoonPhaseInt = 4
+   Case  4 MoonPhaseInt = 4
+   Case  5 MoonPhaseInt = 4
+   Case  6 MoonPhaseInt = 3
+   Case  7 MoonPhaseInt = 3
+   Case  8 MoonPhaseInt = 3
+   Case  9 MoonPhaseInt = 3
+   Case 10 MoonPhaseInt = 2
+   Case 11 MoonPhaseInt = 2
+   Case 12 MoonPhaseInt = 2
+   Case 13 MoonPhaseInt = 1
+   Case 14 MoonPhaseInt = 1
+   Case 15 MoonPhaseInt = 1
+   Case 16 MoonPhaseInt = 1
+   Case 17 MoonPhaseInt = 8
+   Case 18 MoonPhaseInt = 8
+   Case 19 MoonPhaseInt = 8
+   Case 20 MoonPhaseInt = 7
+   Case 21 MoonPhaseInt = 7
+   Case 22 MoonPhaseInt = 7
+   Case 23 MoonPhaseInt = 7
+   Case 24 MoonPhaseInt = 6
+   Case 25 MoonPhaseInt = 6
+   Case 26 MoonPhaseInt = 6
+   Case 27 MoonPhaseInt = 5
+  End Select
+
+  LogThis "Last Full Moon Date:" & wLastFullMoonDate & " DayOfCycle: " & wDayOfCycle & " Suffix: " & MoonPhaseInt
+  
+  MoonPhaseInfo = "_" & MoonPhaseInt
+    
+End Function
