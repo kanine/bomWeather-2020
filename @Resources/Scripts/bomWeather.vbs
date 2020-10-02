@@ -247,6 +247,7 @@ Private Function ForecastTexttoNumber (ForecastText, DayNumber, isNight)
   FewShowers = False
   Hail = False
   Snow = False
+  Windy = False
 
   ForecastText = lcase(ForecastText)
   ForecastText = Replace(ForecastText,"_"," ")
@@ -254,6 +255,7 @@ Private Function ForecastTexttoNumber (ForecastText, DayNumber, isNight)
   LogThis "Parsing (" & DayNumber & "): " & ForecastText
 
   If InStr(ForecastText,"thunderstorm") > 0 Then Thunder = True
+  If InStr(ForecastText,"windy") > 0 Then Windy = True
   If InStr(ForecastText,"thunder") > 0 Then Thunder = True
   If InStr(ForecastText,"rain") > 0 Then Rain = True
   If InStr(ForecastText,"some rain") > 0 Then Fine = True
@@ -314,6 +316,7 @@ Private Function ForecastTexttoNumber (ForecastText, DayNumber, isNight)
   If Not Fine and Not Rain and Not Showers and PartlyCloudy Then TempResult = 30
   If Thunder Then TempResult = 0
   If Thunder and Fine Then TempResult = 37
+  If TempResult = "na" and Windy Then TempResult = 23
 
   LogThis "Interim Result: " & TempResult & ".png"
   
