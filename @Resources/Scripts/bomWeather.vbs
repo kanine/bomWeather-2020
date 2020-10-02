@@ -235,8 +235,6 @@ Private Function ForecastTexttoNumber (ForecastText, DayNumber, isNight)
   Dim Thunder, Rain, Showers, Fine, PartlyCloudy, MostlyCloudy, Fog, FewShowers, Hail, Snow, TempResult
   Dim fs, MoonPhase
 
-  LogThis "Parsing (" & DayNumber & "): " & ForecastText
-
   Thunder = False
   Rain = False
   Showers = False
@@ -249,6 +247,9 @@ Private Function ForecastTexttoNumber (ForecastText, DayNumber, isNight)
   Snow = False
 
   ForecastText = lcase(ForecastText)
+  ForecastText = Replace(ForecastText,"_"," ")
+  ForecastText = Replace(ForecastText,"  "," ")
+  LogThis "Parsing (" & DayNumber & "): " & ForecastText
 
   If InStr(ForecastText,"thunderstorm") > 0 Then Thunder = True
   If InStr(ForecastText,"thunder") > 0 Then Thunder = True

@@ -28,6 +28,6 @@ If it still isn't working please raise an issue in Github or contact me via the 
 
 Notes
 =====
-Occasionally you may get a forecast icon of NA. This means the simple conversion of the forecast text is failing. Please raise an issue and paste the forecast text at the time and it will be a simple fix.
+Occasionally you may get a forecast icon of NA. This means the conversion of the forecast text is failing. Please raise an issue and paste the forecast text at the time and it should be a simple fix.
 
 The phases of the moon csv was created with information from http://www.ga.gov.au, it will need to be updated annually for accurate results, it is currently based on FullMoon dates only and extrapolates the various phases from there.
