@@ -348,7 +348,6 @@ Private Function ForecastTexttoNumber (ForecastText, DayNumber, isNight)
 
 End Function
 
-
 Private Function MoonPhaseInfo()
   
   Dim MoonPhaseInt, wLastFullMoonDate, wFullMoonDate, f, fs, wTemp, wDaysDiff, wEOF, wDayOfCycle
