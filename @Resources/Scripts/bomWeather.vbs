@@ -78,6 +78,8 @@ dateArray = jsonValuestoArray("date",bomDaily)
 isNightArray = jsonValuestoArray("is_night",bomDaily)
 laterLabelArray = jsonValuestoArray("later_label",bomDaily)
 tempLaterArray = jsonValuestoArray("temp_later",bomDaily)
+sunriseArray = jsonValuestoArray("sunrise_time",bomDaily)
+sunsetArray = jsonValuestoArray("sunset_time",bomDaily)
 
 currentTempArray = jsonValuestoArray("temp",bomObservations)
 apparentTempArray = jsonValuestoArray("temp_feels_like",bomObservations)
@@ -122,6 +124,14 @@ objStream.WriteText FormatCalc("CurrentWindDirSpeed", windDirArray(0) & " " & wi
 objStream.WriteText FormatCalc("CurrentForecastShortText", "Forecast for " & WeekdayName(Weekday(ConvertUTCToLocal(dateArray(0)))) & " Max: " & highsArray(i) & degreeSymbol ) 
 objStream.WriteText FormatCalc("FeelsLike", feelsLikeArray(0) & degreeSymbol )
 objStream.WriteText FormatCalc("LaterTemp", laterLabelArray(0) & ": " & tempLaterArray(0) & degreeSymbol )
+
+if Hour(Now()) < 9 Then
+  objStream.WriteText FormatCalc("Sunrise", formatted24hr(ConvertUTCToLocal(sunriseArray(0))))
+  objStream.WriteText FormatCalc("Sunset", formatted24hr(ConvertUTCToLocal(sunsetArray(0))))
+Else
+  objStream.WriteText FormatCalc("Sunrise", formatted24hr(ConvertUTCToLocal(sunriseArray(1))) & "+")
+  objStream.WriteText FormatCalc("Sunset", formatted24hr(ConvertUTCToLocal(sunsetArray(0))))
+End If
 
 For i = 0 to 6
 'For i = 0 to uBound(forecastArray)
