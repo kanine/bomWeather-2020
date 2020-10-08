@@ -7,9 +7,9 @@ Installation
 1) Install Rainmeter from www.rainmeter.net
 2) Download the latest release from GitHub and unzip to Documents\Rainmeter\Skins\bomWeather-2020
 3) If using for the first time run the setup script in the following location:
-    Documents\Rainmeter\Skins\bomWeather-2020\@Resources\Scripts\bomWeatherSetup.vbs
+    Documents\Rainmeter\Skins\bomWeather-2020\\@Resources\Scripts\bomWeatherSetup.vbs
 4) Also run the following script to pull an initial set of data:
-    Documents\Rainmeter\Skins\bomWeather-2020\@Resources\Scripts\Rainmeter\bomWeather.vbs
+    Documents\Rainmeter\Skins\bomWeather-2020\\@Resources\Scripts\Rainmeter\bomWeather.vbs
 
 Using The Skin
 ================
