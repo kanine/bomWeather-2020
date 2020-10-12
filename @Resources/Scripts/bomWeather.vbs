@@ -43,28 +43,28 @@ moonPhase = MoonPhaseInfo
 LogThis "Moon Phase:" & moonPhase
 
 If debugActive Then
-  Set jsonFile = fso.CreateTextFile (scriptDir & "Data\location-" & formattedDateDay(Now()) & ".json", True)
+  Set jsonFile = fso.CreateTextFile (scriptDir & "Data\location.json", True)
   jsonFile.Write bomLocation
   jsonFile.Close
-  Set jsonFile = fso.CreateTextFile (scriptDir & "Data\parentlocation-" & formattedDateDay(Now()) & ".json", True)
+  Set jsonFile = fso.CreateTextFile (scriptDir & "Data\parentlocation.json", True)
   jsonFile.Write bomParentLocation
   jsonFile.Close
-  Set jsonFile = fso.CreateTextFile (scriptDir & "Data\daily-" & formattedDateDay(Now()) & ".json", True)
+  Set jsonFile = fso.CreateTextFile (scriptDir & "Data\daily.json", True)
   jsonFile.Write bomDaily
   jsonFile.Close
-  Set jsonFile = fso.CreateTextFile (scriptDir & "Data\hourly-" & formattedDateDay(Now()) & ".json", True)
+  Set jsonFile = fso.CreateTextFile (scriptDir & "Data\hourly.json", True)
   jsonFile.Write bomHourly
   jsonFile.Close
-  Set jsonFile = fso.CreateTextFile (scriptDir & "Data\3hourly-" & formattedDateDay(Now()) & ".json", True)
+  Set jsonFile = fso.CreateTextFile (scriptDir & "Data\3hourly.json", True)
   jsonFile.Write bom3Hourly
   jsonFile.Close
-  Set jsonFile = fso.CreateTextFile (scriptDir & "Data\observations-" & formattedDateDay(Now()) & ".json", True)
+  Set jsonFile = fso.CreateTextFile (scriptDir & "Data\observations.json", True)
   jsonFile.Write bomObservations
   jsonFile.Close
-  Set jsonFile = fso.CreateTextFile (scriptDir & "Data\rain-" & formattedDateDay(Now()) & ".json", True)
+  Set jsonFile = fso.CreateTextFile (scriptDir & "Data\rain.json", True)
   jsonFile.Write bomRain
   jsonFile.Close
-  Set jsonFile = fso.CreateTextFile (scriptDir & "Data\warnings-" & formattedDateDay(Now()) & ".json", True)
+  Set jsonFile = fso.CreateTextFile (scriptDir & "Data\warnings.json", True)
   jsonFile.Write bomWarnings
   jsonFile.Close
   Set jsonFile = Nothing
@@ -103,7 +103,8 @@ hourly3ChanceArray = jsonValuestoArray("chance",bom3Hourly)
 hourly3IconArray = jsonValuestoArray("icon_descriptor",bom3Hourly)
 hourly3IsNightArray = jsonValuestoArray("is_night",bom3Hourly)
 hourly3TempArray = jsonValuestoArray("temp",bom3Hourly)
-
+hourly3WindDirArray = jsonValuestoArray("direction",bom3Hourly)
+hourly3WindSpeedArray = jsonValuestoArray("speed_kilometre",bom3Hourly)
 
 ' Create Formatted Variables for use by the Skin
 
@@ -199,6 +200,7 @@ For i = 0 to 12
   objStream.WriteText FormatCalc("3Hour" & i & "Temp", hourly3TempArray(i) & degreeSymbol)
   'objStream.WriteText FormatCalc("3Hour" & i & "Icon", hourly3IconArray(i))
   objStream.WriteText FormatCalc("3Hour" & i & "IconImage", ForecastTexttoNumber(hourly3IconArray(i),0,hourly3IsNightArray(i)))
+  objStream.WriteText FormatCalc("3Hour" & i & "Wind", hourly3WindDirArray(i) & " " & hourly3WindSpeedArray(i))
 
 Next
 

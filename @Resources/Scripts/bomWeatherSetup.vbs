@@ -18,14 +18,9 @@ If NOT fso.FolderExists(applicationDir) Then
  fso.CreateFolder(applicationDir)
 End If
 
-ForecastCity = ""
-ObservationType = "Detail"
-observation_url = ""
-observation_station  = ""
-forecast_url = ""
-SunriseLocation = ""
-State = ""
-TimeZone = ""
+Set f = fso.OpenTextFile(scriptDir & "\Data\RadarLocations.json")
+radarLocations = f.readall
+f.close
 
 If fso.FileExists(applicationDir & "\bomWeather-2020-Configuration.txt") Then
   Set f = fso.OpenTextFile(applicationDir & "\bomWeather-2020-Configuration.txt")
@@ -52,7 +47,7 @@ Do While Not selectionConfirmed
   idLookup = fetchHTML("https://api.weather.bom.gov.au/v1/locations?search=" & URLEncode(bomTown))
 
   If debugActive Then
-    Set jsonFile = fso.CreateTextFile (scriptDir & "Data\locations-" & formattedDateDay(Now()) & ".json", True)
+    Set jsonFile = fso.CreateTextFile (scriptDir & "Data\locations-config.json", True)
     jsonFile.Write idLookup
     jsonFile.Close
     Set jsonFile = Nothing
@@ -95,14 +90,54 @@ Do While Not selectionConfirmed
 
 Loop
 
+' Radar Selection
+
+selectionConfirmed = False
+firstTime = True
+messageText = "Please choose your radar location" & vbCRLF
+
+radarArray = jsonValuestoArray("name",radarLocations)
+siteArray = jsonValuestoArray("site",radarLocations)
+
+Dim radarSelectArray(), siteSelectArray()
+x = 0
+
+For i = 0 to uBound(radarArray)
+  LogThis Trim(Right(radarArray(i),3)) & " = " & Trim(stateArray(bomSelect-1))
+  If Trim(Right(radarArray(i),3)) = Trim(stateArray(bomSelect-1)) Then
+    Redim Preserve radarSelectArray(x), siteSelectArray(x)
+    radarSelectArray(x) = radarArray(i)
+    siteSelectArray(x) = siteArray(i)
+    x = x + 1
+    messageText = messageText & x & ": " & radarArray(i) & " - " & siteArray(i) & vbCRLF
+    LogThis messageText
+  End If
+Next
+
+Do While Not selectionConfirmed
+
+  bomRadar = InputBox(messageText, "kanine bomWeather Setup")
+
+  if bomRadar = "" Then wScript.Quit
+
+  if isNumeric(bomRadar) Then
+    If cInt(bomRadar) <= uBound(radarSelectArray) + 1 Then
+      selectionConfirmed = true
+    End If
+  End If
+
+Loop
+
 Set f = fso.CreateTextFile(applicationDir & "\bomWeather-2020-Configuration.txt", True)
 f.writeline "bomTown = " & bomTown  & " <<<"
 f.writeline "bomName = " & nameArray(bomSelect-1)  & " <<<"
 f.writeline "bomID = " & idArray(bomSelect-1)  & " <<<"
 f.writeline "bomgeohash = " & geohashArray(bomSelect-1)  & " <<<"
+f.writeline "bomState = " & geohashArray(bomSelect-1) & " <<<"
+f.writeline "bomRadar = " & siteSelectArray(bomRadar-1) & " <<<"
 f.close
 
-msgbox("Setting Confirmed: " & bomTown)
+msgbox("Setting Confirmed: " & bomTown & " Radar: " & siteSelectArray(bomRadar-1))
 
 Sub VBInclude(incfile)
 

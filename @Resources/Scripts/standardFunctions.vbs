@@ -1,9 +1,9 @@
 if fso.FileExists(scriptDir & "debug.on") Then
   debugActive = True
-  if fso.FileExists(scriptDir & "Logs\bomWeather " & formattedDateDay(Now()) & ".log") Then
-    Set debugFile = fso.OpenTextFile(scriptDir & "Logs\bomWeather " & formattedDateDay(Now()) & ".log", ForAppending, TristateFalse)
+  if fso.FileExists(scriptDir & "Logs\bomWeather.log") Then
+    Set debugFile = fso.OpenTextFile(scriptDir & "Logs\bomWeather.log", ForAppending, TristateFalse)
   Else
-    Set debugFile = fso.CreateTextFile (scriptDir & "Logs\bomWeather " & formattedDateDay(Now()) & ".log", False)
+    Set debugFile = fso.CreateTextFile (scriptDir & "Logs\bomWeather.log", False)
   End If
 Else
   debugActive = False
