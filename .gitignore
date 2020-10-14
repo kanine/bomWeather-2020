@@ -4,3 +4,4 @@ debug.on
 *.lock
 *.txt
 *.html
+Radar/DownloadFile
