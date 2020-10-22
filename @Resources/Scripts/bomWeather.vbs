@@ -270,6 +270,7 @@ Private Function ForecastTexttoNumber (ForecastText, DayNumber, isNight)
   If InStr(ForecastText,"windy") > 0 Then Windy = True
   If InStr(ForecastText,"thunder") > 0 Then Thunder = True
   If InStr(ForecastText,"rain") > 0 Then Rain = True
+  If InStr(ForecastText,"storm") > 0 Then Rain = True
   If InStr(ForecastText,"some rain") > 0 Then Fine = True
   If InStr(ForecastText,"rain at times") > 0 Then Fine = True
   If InStr(ForecastText,"shower") > 0 Then Showers = True
