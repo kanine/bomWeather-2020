@@ -1,9 +1,11 @@
 Option Explicit
 
-Dim wsh, wAppDir, wTempDir, f, fs, InTime, wbomDetails, contents, wDebug
+Dim wsh, wAppDir, wTempDir, f, fs, InTime, wbomDetails, contents, wDebug, needSetup, scriptDir
 Dim RadarLocation, wImageURL0, wImageURL1, wImageURL2, wImageURL3, wImageURL4, wImageURL5
 Const ApplicationFolder = "Rainmeter-kanine"
 Const bomURL = "http://bom.gov.au"
+
+scriptDir = CreateObject("Scripting.FileSystemObject").GetParentFolderName(WScript.ScriptFullName) & "\"
 
 Set wsh = WScript.CreateObject( "WScript.Shell" )
 wAppDir = (wsh.ExpandEnvironmentStrings("%APPDATA%")) & "\"& ApplicationFolder
@@ -15,15 +17,20 @@ wDebug = False
    
 Set fs = CreateObject ("Scripting.FileSystemObject")
 
+needSetup = True
+RadarLocation = ""
+
 If fs.FileExists(wAppDir & "\bomWeather-2020-Configuration.txt") Then
   Set f = fs.OpenTextFile(wAppDir & "\bomWeather-2020-Configuration.txt")
   wbomDetails = f.readall
   f.close
   RadarLocation = parse_item (wbomDetails, "bomRadar =", "<<<")
-Else
+  needSetup = False
+End If
+
+If needSetup OR RadarLocation = "Invalid Data" Then
   Dim objShell
   Set objShell = Wscript.CreateObject("WScript.Shell")
-  LogThis scriptDir & "bomWeatherSetup.vbs"
   objShell.Run "cmd /c cscript """ & scriptDir & "bomWeatherSetup.vbs"""
   Set objShell = Nothing
   WScript.Quit
@@ -31,7 +38,7 @@ End If
 
 GetRadar
 
-Set f = fs.CreateTextFile ("bomRadar-calculations.txt", True)
+Set f = fs.CreateTextFile (scriptDir & "Data\bomRadar-calculations.txt", True)
 
 f.writeline FormatCalc("RadarLocation",  RadarLocation)
 f.writeline FormatCalc("RadarImage0", bomURL & wImageURL0)
