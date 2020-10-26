@@ -2,8 +2,8 @@
 
 An Australian Weather Rainmeter Skin based on the Bureau of Meteorology data
 
-Installation - Simplified
-=========================
+Installation
+============
 1) Install Rainmeter from www.rainmeter.net
 2) Download the latest skin from this link: [bomWeather](https://kanine.github.io/downloads/bomWeather_0.1b.rmskin) then load into Rainmeter, this can usually be done by double clicking the file
 
