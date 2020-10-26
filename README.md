@@ -5,11 +5,9 @@ An Australian Weather Rainmeter Skin based on the Bureau of Meteorology data
 Installation
 ============
 1) Install Rainmeter from www.rainmeter.net
-2) Download the latest release from GitHub and unzip to Documents\Rainmeter\Skins\bomWeather-2020
-3) If using for the first time run the setup script in the following location:
-    Documents\Rainmeter\Skins\bomWeather-2020\\@Resources\Scripts\bomWeatherSetup.vbs
-4) Also run the following script to pull an initial set of data:
-    Documents\Rainmeter\Skins\bomWeather-2020\\@Resources\Scripts\Rainmeter\bomWeather.vbs
+2) If you know how to use GitHub just clone the repository to your Documents/Rainmeter/Skins Folder
+OR
+2) Load the latest skin from this link: [bomWeather](https://kanine.github.io/downloads/bomWeather_0.1b.rmskin) then load into Rainmeter, this can usually be done by double clicking the file
 
 Using The Skin
 ================
@@ -26,4 +24,4 @@ Notes
 =====
 Occasionally you may get a forecast icon of NA. This means the conversion of the forecast text is failing. Please raise an issue and paste the forecast text at the time and it should be a simple fix.
 
-The phases of the moon csv was created with information from https://www.timeanddate.com/moon/phases, it will need to be updated annually for accurate results, it is currently based on FullMoon dates only and extrapolates the various phases from there.
+The data in MoonPhases.csv was created with information from https://www.timeanddate.com/moon/phases, it will need to be updated annually for accurate results, it is currently based on FullMoon dates only and extrapolates the various phases from there.
