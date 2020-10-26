@@ -7,7 +7,7 @@ Installation
 1) Install Rainmeter from www.rainmeter.net
 2) If you know how to use GitHub just clone the repository to your Documents/Rainmeter/Skins Folder
 OR
-2) Load the latest skin from this link: [bomWeather](https://kanine.github.io/downloads/bomWeather_0.1b.rmskin) then load into Rainmeter, this can usually be done by double clicking the file
+2) Download the latest skin from this link: [bomWeather](https://kanine.github.io/downloads/bomWeather_0.1b.rmskin) then load into Rainmeter, this can usually be done by double clicking the file
 
 Using The Skin
 ================
