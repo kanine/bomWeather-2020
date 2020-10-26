@@ -22,7 +22,11 @@ If fso.FileExists(applicationDir & "bomWeather-2020-Configuration.txt") Then
   bomID = parse_item (configData, "bomID =", "<<<")
   bomgeohash = parse_item (configData, "bomgeohash =", "<<<")
 Else
-  MsgBox("Please run bomWeatherSetup.vbs to set up your configuration")
+  Dim objShell
+  Set objShell = Wscript.CreateObject("WScript.Shell")
+  LogThis scriptDir & "bomWeatherSetup.vbs"
+  objShell.Run "cmd /c cscript """ & scriptDir & "bomWeatherSetup.vbs"""
+  Set objShell = Nothing
   WScript.Quit
 End If
 

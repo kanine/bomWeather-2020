@@ -21,8 +21,12 @@ If fs.FileExists(wAppDir & "\bomWeather-2020-Configuration.txt") Then
   f.close
   RadarLocation = parse_item (wbomDetails, "bomRadar =", "<<<")
 Else
-  MsgBox("Please run bomWeatherSetup.vbs to set up your configuration")
-  wScript.Quit
+  Dim objShell
+  Set objShell = Wscript.CreateObject("WScript.Shell")
+  LogThis scriptDir & "bomWeatherSetup.vbs"
+  objShell.Run "cmd /c cscript """ & scriptDir & "bomWeatherSetup.vbs"""
+  Set objShell = Nothing
+  WScript.Quit
 End If
 
 GetRadar
