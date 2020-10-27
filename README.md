@@ -2,6 +2,8 @@
 
 An Australian Weather Rainmeter Skin based on the Bureau of Meteorology data
 
+[Example](https://kanine.github.io/downloads/3hour.jpg)
+
 Installation
 ============
 1) Install Rainmeter from www.rainmeter.net
