@@ -47,13 +47,18 @@ f.writeline FormatCalc("RadarImage2", bomURL & wImageURL2)
 f.writeline FormatCalc("RadarImage3", bomURL & wImageURL3)
 f.writeline FormatCalc("RadarImage4", bomURL & wImageURL4)
 f.writeline FormatCalc("RadarImage5", bomURL & wImageURL5)
+f.writeline FormatCalc("RadarTime0", URLtoTime(wImageURL0))
+f.writeline FormatCalc("RadarTime1", URLtoTime(wImageURL1))
+f.writeline FormatCalc("RadarTime2", URLtoTime(wImageURL2))
+f.writeline FormatCalc("RadarTime3", URLtoTime(wImageURL3))
+f.writeline FormatCalc("RadarTime4", URLtoTime(wImageURL4))
+f.writeline FormatCalc("RadarTime5", URLtoTime(wImageURL5))
 f.writeline FormatCalc("LastUpdate", InTime)
 
 f.close
 
 Set f = Nothing
 Set fs = Nothing
-
 
 Sub GetRadar
 
@@ -119,3 +124,35 @@ Private Function parse_item (ByRef contents, start_tag, end_tag)
 
 End Function
 
+Function URLtoTime(pURL)
+
+  Dim UTCTime, dateText
+
+  dateText = left(right(pURL,16),12)
+  URLtoTime = ConvertUTCToLocal(Mid(dateText,1,4) & "-" & Mid(dateText,5,2)  & "-" & Mid(dateText,7,2) & "T" & Mid(dateText,9,2) & ":" & Mid(dateText,11,2)  & ":00Z")
+
+End Function
+
+Function ConvertUTCToLocal( varTime )
+    
+  Dim myObj, MyDate
+  
+  if Not isnull(varTime) Then
+  
+    MyDate = CDate(replace(Mid(varTime, 1, 19) , "T", " "))
+    Set myObj = CreateObject( "WbemScripting.SWbemDateTime" )
+    myObj.Year = Year( MyDate )
+    myObj.Month = Month( MyDate )
+    myObj.Day = Day( MyDate )
+    myObj.Hours = Hour( MyDate )
+    myObj.Minutes = Minute( myDate )
+    myObj.Seconds = Second( myDate )
+    ConvertUTCToLocal = myObj.GetVarDate( True )
+    
+  Else
+  
+    ConvertUTCToLocal = null
+  
+  End If
+  
+End Function
