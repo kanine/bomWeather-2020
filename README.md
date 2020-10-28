@@ -1,4 +1,4 @@
-# bomWeather - Work in Progress
+# bomWeather Rainmeter Weather Script
 
 An Australian Weather Rainmeter Skin based on the Bureau of Meteorology data
 
@@ -24,4 +24,4 @@ Notes
 =====
 Occasionally you may get a forecast icon of NA. This means the conversion of the forecast text is failing. Please raise an issue and paste the forecast text at the time and it should be a simple fix.
 
-The data in MoonPhases.csv was created with information from https://www.timeanddate.com/moon/phases, it will need to be updated annually for accurate results, it is currently based on FullMoon dates only and extrapolates the various phases from there.
+The data in FullMoons.csv was created with information from https://www.timeanddate.com/moon/phases, it will need to be updated annually for accurate results, it is currently based on FullMoon dates only and extrapolates the various phases from there.
