@@ -351,6 +351,7 @@ Private Function ForecastTexttoNumber (ForecastText, DayNumber, isNight)
     If TempResult = 15 Then TempResult = 46
     If TempResult = 26 Then TempResult = 27
     If TempResult = 34 Then TempResult = 33
+    If TempResult = 20 Then TempResult = 33
 
     'LogThis moonPhase
 
