@@ -1,9 +1,12 @@
 Option Explicit
 
-Dim wsh, wAppDir, wTempDir, f, fs, InTime, wbomDetails, contents, wDebug, needSetup, scriptDir
-Dim RadarLocation, wImageURL0, wImageURL1, wImageURL2, wImageURL3, wImageURL4, wImageURL5
+Dim wsh, wAppDir, wTempDir, f, fs, InTime, wbomDetails, contents, debugActive, needSetup, scriptDir, radarInfo()
+Dim RadarLocation, i, regularExp, measureDefs, measureIndex, offsetIndex, imageCount
 Const ApplicationFolder = "Rainmeter-kanine"
 Const bomURL = "http://bom.gov.au"
+
+measureIndex = 1
+regularExp = ""
 
 scriptDir = CreateObject("Scripting.FileSystemObject").GetParentFolderName(WScript.ScriptFullName) & "\"
 
@@ -12,10 +15,16 @@ wAppDir = (wsh.ExpandEnvironmentStrings("%APPDATA%")) & "\"& ApplicationFolder
 wTempDir = (wsh.ExpandEnvironmentStrings("%TEMP%")) & "\"& ApplicationFolder
 Set wsh = Nothing
 
-InTime = Now()
-wDebug = False
    
 Set fs = CreateObject ("Scripting.FileSystemObject")
+
+if fs.FileExists(scriptDir & "debug.on") Then
+  debugActive = True
+Else
+  debugActive = False
+End If
+
+InTime = Now()
 
 needSetup = True
 RadarLocation = ""
@@ -41,19 +50,33 @@ GetRadar
 Set f = fs.CreateTextFile (scriptDir & "Data\bomRadar-calculations.txt", True)
 
 f.writeline FormatCalc("RadarLocation",  RadarLocation)
-f.writeline FormatCalc("RadarImage0", bomURL & wImageURL0)
-f.writeline FormatCalc("RadarImage1", bomURL & wImageURL1)
-f.writeline FormatCalc("RadarImage2", bomURL & wImageURL2)
-f.writeline FormatCalc("RadarImage3", bomURL & wImageURL3)
-f.writeline FormatCalc("RadarImage4", bomURL & wImageURL4)
-f.writeline FormatCalc("RadarImage5", bomURL & wImageURL5)
-f.writeline FormatCalc("RadarTime0", ">> " & URLtoTime(wImageURL0) & " >>")
-f.writeline FormatCalc("RadarTime1", URLtoTime(wImageURL1))
-f.writeline FormatCalc("RadarTime2", URLtoTime(wImageURL2))
-f.writeline FormatCalc("RadarTime3", URLtoTime(wImageURL3))
-f.writeline FormatCalc("RadarTime4", URLtoTime(wImageURL4))
-f.writeline FormatCalc("RadarTime5", URLtoTime(wImageURL5))
+f.writeline FormatCalc("RadarCount",  6)
+
+offsetIndex = 0
+
+if imageCount > 6 Then offsetIndex = imageCount - 6
+
+For i = 0 to 5
+   if i+offsetIndex <= imageCount - 1 Then 
+    f.writeline FormatCalc("RadarImage" & i, bomURL & radarInfo(i+offsetIndex))
+    if i = 0 Then 
+      f.writeline FormatCalc("RadarTime" & i, ">> " & URLtoTime(radarInfo(i+offsetIndex)) & " >>")
+    Else
+      f.writeline FormatCalc("RadarTime" & i, URLtoTime(radarInfo(i+offsetIndex)))
+    End If
+  Else
+    f.writeline FormatCalc("RadarImage" & i, bomURL & radarInfo(imageCount-1))
+    f.writeline FormatCalc("RadarTime" & i, URLtoTime(radarInfo(imageCount-1)))
+  End If
+Next
+
 f.writeline FormatCalc("LastUpdate", InTime)
+
+if debugActive Then
+  f.writeline vbCRLF & "# Rainmeter Measure Definitions" & vbCRLF
+  f.writeline "RegExp=""(?siU)" & regularExp & """" & vbCRLF
+  f.writeline measureDefs
+End If
 
 f.close
 
@@ -62,7 +85,7 @@ Set fs = Nothing
 
 Sub GetRadar
 
-    Dim xml, wURL
+    Dim xml, wURL, lastRadar, imageURL
     
     wURL = "http://www.bom.gov.au/products/" & RadarLocation & ".loop.shtml"
     
@@ -72,29 +95,42 @@ Sub GetRadar
     
     contents = xml.responseText
     
-    If wDebug Then
+    If debugActive Then
       Set fs = CreateObject ("Scripting.FileSystemObject")
       Set f = fs.CreateTextFile("Radar.html", True)
       f.write wURL & vbCRLF & contents
       f.close
     End If
 
-    wImageURL0 = parse_item (contents,"theImageNames[0] = """ ,"""")
-    wImageURL1 = parse_item (contents,"theImageNames[1] = """ ,"""")
-    wImageURL2 = parse_item (contents,"theImageNames[2] = """ ,"""")
-    wImageURL3 = parse_item (contents,"theImageNames[3] = """ ,"""")
-    wImageURL4 = parse_item (contents,"theImageNames[4] = """ ,"""")
-    If wImageURL4 = "Invalid Data" Then wImageURL4 = wImageURL3
-    wImageURL5 = parse_item (contents,"theImageNames[5] = """ ,"""")
-    If wImageURL5 = "Invalid Data" Then wImageURL5 = wImageURL4
+    imageCount = 0
+    lastRadar = False
 
-    contents = xml.responseText
+    Do While Not lastRadar
+
+      imageURL = parse_item (contents,"theImageNames[" & imageCount & "] = """ ,"""")
+      if imageURL = "Invalid Data" Then
+        lastRadar = True
+      Else
+        ReDim Preserve radarInfo(imageCount+1)
+        radarInfo(imageCount) = imageURL
+        'msgbox(imageCount & " " & imageURL)
+        imageCount = imageCount + 1
+      End If
     
-    Set xml = Nothing
+    Loop
 
 End Sub
 
 Private Function FormatCalc (paramString, wMeasure)
+
+  regularExp = regularExp & "<" & paramString & ">(.*)" & "</" & paramString & ">.*"
+  
+  measureDefs = measureDefs & "[Measure" & paramString & "]" & vbCRLF
+  measureDefs = measureDefs & "Measure=WebParser" & vbCRLF
+  measureDefs = measureDefs & "URL=[MeasureRadarConfig]" & vbCRLF
+  measureDefs = measureDefs & "StringIndex=" & measureIndex & vbCRLF
+  measureDefs = measureDefs & vbCRLF
+  measureIndex = measureIndex + 1
 
   FormatCalc = "<" & paramString & ">" & wMeasure & "</" & paramString & ">"
 
