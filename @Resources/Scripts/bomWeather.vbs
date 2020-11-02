@@ -138,8 +138,7 @@ Else
   objStream.WriteText FormatCalc("Sunset", formatted24hr(ConvertUTCToLocal(sunsetArray(0))))
 End If
 
-For i = 0 to 6
-'For i = 0 to uBound(forecastArray)
+For i = 0 to uBound(forecastArray)
 
   objStream.WriteText FormatCalc("Day" & i & "Forecast", forecastArray(i))
   objStream.WriteText FormatCalc("Day" & i & "ForecastImage", ForecastTexttoNumber(forecastArray(i),i,isNightArray(0)))
@@ -148,6 +147,19 @@ For i = 0 to 6
   objStream.WriteText FormatCalc("Day" & i & "Date", ConvertUTCToLocal(dateArray(i)))
   objStream.WriteText FormatCalc("Day" & i & "DayName", WeekdayName(Weekday(ConvertUTCToLocal(dateArray(i)))))
   objStream.WriteText FormatCalc("Day" & i & "ShortCapName", uCase(Left(WeekdayName(Weekday(ConvertUTCToLocal(dateArray(i)))),3)))
+
+Next
+
+' Pad out to 7 days
+For i = 1 to 6 - uBound(forecastArray)
+
+  objStream.WriteText FormatCalc("Day" & i + 5 & "Forecast", "")
+  objStream.WriteText FormatCalc("Day" & i + 5 & "ForecastImage", "")
+  objStream.WriteText FormatCalc("Day" & i + 5 & "HighLow", "")
+  objStream.WriteText FormatCalc("Day" & i + 5 & "ChanceofRain", "")
+  objStream.WriteText FormatCalc("Day" & i + 5 & "Date", "")
+  objStream.WriteText FormatCalc("Day" & i + 5 & "DayName", "")
+  objStream.WriteText FormatCalc("Day" & i + 5 & "ShortCapName", "")
 
 Next
 
