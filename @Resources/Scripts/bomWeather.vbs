@@ -39,7 +39,8 @@ bomParentLocation = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & b
 bomDaily = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomgeohash & "/forecasts/daily")
 bomHourly = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomParent & "/forecasts/hourly")
 bom3Hourly = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomParent & "/forecasts/3-hourly")
-bomObservations = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomgeohash & "/observations")
+'bomObservations = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomgeohash & "/observations")
+bomObservations = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomparent & "/observations")
 bomRain = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomParent & "/forecast/rain")
 bomWarnings = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomgeohash & "/warnings")
 moonPhase = MoonPhaseInfo
@@ -137,6 +138,8 @@ Else
   objStream.WriteText FormatCalc("Sunrise", formatted24hr(ConvertUTCToLocal(sunriseArray(1))) & "+")
   objStream.WriteText FormatCalc("Sunset", formatted24hr(ConvertUTCToLocal(sunsetArray(0))))
 End If
+
+LogThis(uBound(forecastArray) & " Forecasts")
 
 For i = 0 to uBound(forecastArray)
 
