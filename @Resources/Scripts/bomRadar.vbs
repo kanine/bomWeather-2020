@@ -3,7 +3,7 @@ Option Explicit
 Dim wsh, wAppDir, wTempDir, f, fs, InTime, wbomDetails, contents, debugActive, needSetup, scriptDir, radarInfo()
 Dim RadarLocation, i, regularExp, measureDefs, measureIndex, offsetIndex, imageCount
 Const ApplicationFolder = "Rainmeter-kanine"
-Const bomURL = "http://bom.gov.au"
+Const bomURL = "http://www.bom.gov.au"
 
 measureIndex = 1
 regularExp = ""
@@ -14,7 +14,6 @@ Set wsh = WScript.CreateObject( "WScript.Shell" )
 wAppDir = (wsh.ExpandEnvironmentStrings("%APPDATA%")) & "\"& ApplicationFolder
 wTempDir = (wsh.ExpandEnvironmentStrings("%TEMP%")) & "\"& ApplicationFolder
 Set wsh = Nothing
-
    
 Set fs = CreateObject ("Scripting.FileSystemObject")
 
