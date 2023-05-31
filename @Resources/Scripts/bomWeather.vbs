@@ -9,6 +9,8 @@ Set fso = CreateObject("Scripting.FileSystemObject")
 VBInclude "standardFunctions.vbs"
 applicationDir = GetENV("APPDATA") & "\" & applicationFolder & "\"
 
+debugActive = false
+
 LogThis "Starting bomWeather Updater"
 
 UpdateTimeStamp = formattedDateSS(Now())
@@ -38,8 +40,6 @@ bomLocation = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomgeoh
 bomParentLocation = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomParent)
 bomDaily = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomgeohash & "/forecasts/daily")
 bomHourly = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomParent & "/forecasts/hourly")
-bom3Hourly = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomParent & "/forecasts/3-hourly")
-'bomObservations = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomgeohash & "/observations")
 bomObservations = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomparent & "/observations")
 bomRain = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomParent & "/forecast/rain")
 bomWarnings = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomgeohash & "/warnings")
@@ -59,9 +59,6 @@ If debugActive Then
   jsonFile.Close
   Set jsonFile = fso.CreateTextFile (scriptDir & "Data\hourly.json", True)
   jsonFile.Write bomHourly
-  jsonFile.Close
-  Set jsonFile = fso.CreateTextFile (scriptDir & "Data\3hourly.json", True)
-  jsonFile.Write bom3Hourly
   jsonFile.Close
   Set jsonFile = fso.CreateTextFile (scriptDir & "Data\observations.json", True)
   jsonFile.Write bomObservations
@@ -103,13 +100,13 @@ hourlyIconArray = jsonValuestoArray("icon_descriptor",bomHourly)
 hourlyIsNightArray = jsonValuestoArray("is_night",bomHourly)
 hourlytempArray = jsonValuestoArray("temp",bomHourly)
 
-hourly3TimeArray = jsonValuestoArray("time",bom3Hourly)
-hourly3ChanceArray = jsonValuestoArray("chance",bom3Hourly)
-hourly3IconArray = jsonValuestoArray("icon_descriptor",bom3Hourly)
-hourly3IsNightArray = jsonValuestoArray("is_night",bom3Hourly)
-hourly3TempArray = jsonValuestoArray("temp",bom3Hourly)
-hourly3WindDirArray = jsonValuestoArray("direction",bom3Hourly)
-hourly3WindSpeedArray = jsonValuestoArray("speed_kilometre",bom3Hourly)
+hourly3TimeArray = jsonValuestoArray("time",bomHourly)
+hourly3ChanceArray = jsonValuestoArray("chance",bomHourly)
+hourly3IconArray = jsonValuestoArray("icon_descriptor",bomHourly)
+hourly3IsNightArray = jsonValuestoArray("is_night",bomHourly)
+hourly3TempArray = jsonValuestoArray("temp",bomHourly)
+hourly3WindDirArray = jsonValuestoArray("direction",bomHourly)
+hourly3WindSpeedArray = jsonValuestoArray("speed_kilometre",bomHourly)
 
 ' Create Formatted Variables for use by the Skin
 
@@ -209,17 +206,16 @@ regularExp = ""
 measureIndex = 1
 objStream.Open
 
-'For i = 0 to uBound(hourly3TimeArray)
 For i = 0 to 12
 
   'objStream.WriteText FormatCalc("3Hour" & i & "TimeUTC", hourly3TimeArray(i))
   'objStream.WriteText FormatCalc("3Hour" & i & "Time", ConvertUTCToLocal(hourly3TimeArray(i)))
-  objStream.WriteText FormatCalc("3Hour" & i & "Time24", formatted24hr(ConvertUTCToLocal(hourly3TimeArray(i))))
-  objStream.WriteText FormatCalc("3Hour" & i & "Chance", hourly3ChanceArray(i))
-  objStream.WriteText FormatCalc("3Hour" & i & "Temp", hourly3TempArray(i) & degreeSymbol)
+  objStream.WriteText FormatCalc("3Hour" & i & "Time24", formatted24hr(ConvertUTCToLocal(hourly3TimeArray(i*3))))
+  objStream.WriteText FormatCalc("3Hour" & i & "Chance", hourly3ChanceArray(i*3))
+  objStream.WriteText FormatCalc("3Hour" & i & "Temp", hourly3TempArray(i*3) & degreeSymbol)
   'objStream.WriteText FormatCalc("3Hour" & i & "Icon", hourly3IconArray(i))
-  objStream.WriteText FormatCalc("3Hour" & i & "IconImage", ForecastTexttoNumber(hourly3IconArray(i),0,hourly3IsNightArray(i)))
-  objStream.WriteText FormatCalc("3Hour" & i & "Wind", hourly3WindDirArray(i) & " " & hourly3WindSpeedArray(i))
+  objStream.WriteText FormatCalc("3Hour" & i & "IconImage", ForecastTexttoNumber(hourly3IconArray(i*3),0,hourly3IsNightArray(i*3)))
+  objStream.WriteText FormatCalc("3Hour" & i & "Wind", hourly3WindDirArray(i) & " " & hourly3WindSpeedArray(i*3))
 
 Next
 
