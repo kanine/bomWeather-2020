@@ -197,7 +197,7 @@ objStream.Open
 
 For i = 0 to 12*3 Step 3
 
-  objStream.WriteText FormatCalc("3Hour" & i / 3 & "Time24", formatted12hrNoPad(ConvertUTCToLocal(hourlyTimeArray(i))))
+  objStream.WriteText FormatCalc("3Hour" & i / 3 & "Time24", formatted24hrNoPad(ConvertUTCToLocal(hourlyTimeArray(i))))
   objStream.WriteText FormatCalc("3Hour" & i / 3 & "Chance", hourlyChanceArray(i))
   objStream.WriteText FormatCalc("3Hour" & i / 3 & "Temp", hourlyTempArray(i) & degreeSymbol)
   objStream.WriteText FormatCalc("3Hour" & i / 3 & "IconImage", ForecastTexttoNumber(hourlyIconArray(i),0,hourlyIsNightArray(i)))
