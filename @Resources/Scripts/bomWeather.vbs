@@ -9,8 +9,6 @@ Set fso = CreateObject("Scripting.FileSystemObject")
 VBInclude "standardFunctions.vbs"
 applicationDir = GetENV("APPDATA") & "\" & applicationFolder & "\"
 
-debugActive = false
-
 LogThis "Starting bomWeather Updater"
 
 UpdateTimeStamp = formattedDateSS(Now())
@@ -40,7 +38,7 @@ bomLocation = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomgeoh
 bomParentLocation = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomParent)
 bomDaily = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomgeohash & "/forecasts/daily")
 bomHourly = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomParent & "/forecasts/hourly")
-bomObservations = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomparent & "/observations")
+bomObservations = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomParent & "/observations")
 bomRain = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomParent & "/forecast/rain")
 bomWarnings = fetchHTML("https://api.weather.bom.gov.au/v1/locations/" & bomgeohash & "/warnings")
 moonPhase = MoonPhaseInfo
@@ -99,18 +97,10 @@ hourlyChanceArray = jsonValuestoArray("chance",bomHourly)
 hourlyIconArray = jsonValuestoArray("icon_descriptor",bomHourly)
 hourlyIsNightArray = jsonValuestoArray("is_night",bomHourly)
 hourlytempArray = jsonValuestoArray("temp",bomHourly)
-
-hourly3TimeArray = jsonValuestoArray("time",bomHourly)
-hourly3ChanceArray = jsonValuestoArray("chance",bomHourly)
-hourly3IconArray = jsonValuestoArray("icon_descriptor",bomHourly)
-hourly3IsNightArray = jsonValuestoArray("is_night",bomHourly)
-hourly3TempArray = jsonValuestoArray("temp",bomHourly)
-hourly3WindDirArray = jsonValuestoArray("direction",bomHourly)
-hourly3WindSpeedArray = jsonValuestoArray("speed_kilometre",bomHourly)
+hourlyWindDirArray = jsonValuestoArray("direction",bomHourly)
+hourlyWindSpeedArray = jsonValuestoArray("speed_kilometre",bomHourly)
 
 ' Create Formatted Variables for use by the Skin
-
-'Set f = fso.CreateTextFile (scriptDir &"Data\bomWeather-new.txt", True)
 
 Dim objStream
 Set objStream = CreateObject("ADODB.Stream")
@@ -179,7 +169,6 @@ regularExp = ""
 measureIndex = 1
 
 objStream.Open
-'For i = 0 to uBound(hourlyTimeArray)
 For i = 0 to 12
 
   'objStream.WriteText FormatCalc("Hour" & i & "TimeUTC", hourlyTimeArray(i))
@@ -206,16 +195,13 @@ regularExp = ""
 measureIndex = 1
 objStream.Open
 
-For i = 0 to 12
+For i = 0 to 12*3 Step 3
 
-  'objStream.WriteText FormatCalc("3Hour" & i & "TimeUTC", hourly3TimeArray(i))
-  'objStream.WriteText FormatCalc("3Hour" & i & "Time", ConvertUTCToLocal(hourly3TimeArray(i)))
-  objStream.WriteText FormatCalc("3Hour" & i & "Time24", formatted24hr(ConvertUTCToLocal(hourly3TimeArray(i*3))))
-  objStream.WriteText FormatCalc("3Hour" & i & "Chance", hourly3ChanceArray(i*3))
-  objStream.WriteText FormatCalc("3Hour" & i & "Temp", hourly3TempArray(i*3) & degreeSymbol)
-  'objStream.WriteText FormatCalc("3Hour" & i & "Icon", hourly3IconArray(i))
-  objStream.WriteText FormatCalc("3Hour" & i & "IconImage", ForecastTexttoNumber(hourly3IconArray(i*3),0,hourly3IsNightArray(i*3)))
-  objStream.WriteText FormatCalc("3Hour" & i & "Wind", hourly3WindDirArray(i) & " " & hourly3WindSpeedArray(i*3))
+  objStream.WriteText FormatCalc("3Hour" & i / 3 & "Time24", formatted24hrNoPad(ConvertUTCToLocal(hourlyTimeArray(i))))
+  objStream.WriteText FormatCalc("3Hour" & i / 3 & "Chance", hourlyChanceArray(i))
+  objStream.WriteText FormatCalc("3Hour" & i / 3 & "Temp", hourlyTempArray(i) & degreeSymbol)
+  objStream.WriteText FormatCalc("3Hour" & i / 3 & "IconImage", ForecastTexttoNumber(hourlyIconArray(i),0,hourlyIsNightArray(i)))
+  objStream.WriteText FormatCalc("3Hour" & i / 3 & "Wind", hourlyWindDirArray(i) & " " & hourlyWindSpeedArray(i))
 
 Next
 
